@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y \
     && echo "deb [signed-by=/usr/share/keyrings/mongodb-server-keyring.gpg] https://repo.mongodb.org/apt/debian bookworm/mongodb-org/7.0 main" | tee /etc/apt/sources.list.d/mongodb-org-7.0.list \
     && apt-get update && apt-get install -y mongodb-mongosh \
     && rm -rf /var/lib/apt/lists/*
-COPY ../package*.json ./
+COPY package*.json ./
 RUN npm install
 COPY ./order-service/. .
 EXPOSE 5003
