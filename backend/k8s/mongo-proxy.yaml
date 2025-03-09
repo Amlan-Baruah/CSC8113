@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb-proxy
+  template:
+    metadata:
+      labels:
+        app: mongodb-proxy
+    spec:
+      containers:
+      - name: mongodb-proxy
+        image: mongo:6.0
+        command: ["sleep", "infinity"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-proxy
+spec:
+  selector:
+    app: mongodb-proxy
+  ports:
+  - protocol: TCP
+    port: 27017
+    targetPort: 27017

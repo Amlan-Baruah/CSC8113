@@ -2,24 +2,26 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const dns = require("dns");
 
 dotenv.config();
+
+dns.setDefaultResultOrder("ipv4first");
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log("📚 Catalog Service Connected to MongoDB"))
-.catch(err => console.log("Database connection error:", err));
+console.log("🔍 MONGO_URI Loaded:", process.env.MONGO_URI);
 
-// Import and use book routes
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("📚 Catalog Service Connected to MongoDB"))
+  .catch(err => {
+    console.error("Database connection error:", err);
+  });
+
 const bookRoutes = require("./routes/bookRoutes");
 app.use("/api/books", bookRoutes);
 
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => console.log(`📚 Catalog Service running on port ${PORT}`));
+app.listen(PORT, "0.0.0.0", () => console.log(`🚀 Catalog Service running on port ${PORT}`));

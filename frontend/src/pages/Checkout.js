@@ -9,7 +9,6 @@ const Checkout = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // ✅ Form Data for Shipping & Payment
   const [shippingAddress, setShippingAddress] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("Credit Card");
   const [error, setError] = useState(null);
@@ -37,8 +36,8 @@ const Checkout = () => {
       };
 
       await placeOrder(orderData, localStorage.getItem("token"));
-      clearCart(); // ✅ Empty the cart after order
-      navigate("/order-success"); // ✅ Redirect to confirmation page
+      clearCart();
+      navigate("/order-success");
     } catch (err) {
       setError("Error placing order. Please try again.");
     }

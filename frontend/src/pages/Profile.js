@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from "react"; 
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";  // ✅ Use AuthContext
+import { AuthContext } from "../context/AuthContext";
 
 const Profile = () => {
-    const { user, updateProfile, logout } = useContext(AuthContext);  // ✅ Use updateProfile from AuthContext
+    const { user, updateProfile, logout } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const [name, setName] = useState(user?.name || "");
@@ -13,7 +13,7 @@ const Profile = () => {
 
     useEffect(() => {
         if (!user) {
-            navigate("/login"); // ✅ Redirect if not logged in
+            navigate("/login");
         } else {
             setName(user.name);
             setEmail(user.email);
@@ -25,10 +25,10 @@ const Profile = () => {
         setMessage(null);
 
         try {
-            await updateProfile({ name, email, password });  // ✅ Use updateProfile from context
-            setMessage("✅ Profile updated successfully!");
+            await updateProfile({ name, email, password });
+            setMessage("Profile updated successfully!");
         } catch (error) {
-            setMessage("❌ Error updating profile. Try again.");
+            setMessage("Error updating profile. Try again.");
         }
     };
 

@@ -3,12 +3,12 @@ const { getBooks, getBookById, addBook, updateBook, decreaseStock, deleteBook } 
 
 const router = express.Router();
 
-router.get("/", getBooks);  // ✅ Get all books
-router.get("/:id", getBookById);  // ✅ Get book by ID
-router.post("/", addBook);  // ✅ Add a new book
-router.put("/:id", updateBook);  // ✅ Update book by ID
-router.put("/:id/decreaseStock", decreaseStock);  // ✅ Decrease stock by ID
-router.delete("/:id", deleteBook);  // ✅ Delete book by ID
+router.get("/", getBooks);
+router.get("/:id", getBookById);
+router.post("/", addBook);
+router.put("/:id", updateBook);
+router.put("/:id/decreaseStock", decreaseStock);
+router.delete("/:id", deleteBook);
 
 
 module.exports = router;

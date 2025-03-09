@@ -1,4 +1,3 @@
-// 📌 src/components/BookCard.js
 import React from "react";
 import { Link } from "react-router-dom";
 
@@ -9,7 +8,7 @@ const BookCard = ({ book }) => {
             <p><strong>Author:</strong> {book.author}</p>
             <p><strong>Price:</strong> ${book.price}</p>
 
-            {/* ✅ Link to Book Details Page */}
+            {/*Link to Book Details Page */}
             <Link to={`/book/${book._id}`}>
                 <button className="details-btn">View Details</button>
             </Link>

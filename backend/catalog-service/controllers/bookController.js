@@ -1,6 +1,5 @@
 const Book = require("../models/bookModel");
 
-// ✅ Get all books
 const getBooks = async (req, res) => {
     try {
         const books = await Book.find();
@@ -11,7 +10,6 @@ const getBooks = async (req, res) => {
     }
 };
 
-// ✅ Get Book by ID
 const getBookById = async (req, res) => {
     try {
         const book = await Book.findById(req.params.id);
@@ -27,10 +25,9 @@ const getBookById = async (req, res) => {
 };
 
 
-// ✅ Add a new book
 const addBook = async (req, res) => {
     try {
-        console.log("Incoming request body:", req.body);  // ✅ Log request data
+        console.log("Incoming request body:", req.body); 
 
         const { title, author, description, price, category, image, stock } = req.body;
 
@@ -43,12 +40,11 @@ const addBook = async (req, res) => {
         res.status(201).json(book);
 
     } catch (error) {
-        console.error("Error adding book:", error);  // ✅ Log the error
+        console.error("Error adding book:", error); 
         res.status(500).json({ message: "Error adding book", error: error.message });
     }
 };
 
-// ✅ Update an existing book
 const updateBook = async (req, res) => {
     try {
         const { title, author, description, price, category, image, stock } = req.body;
@@ -71,7 +67,6 @@ const updateBook = async (req, res) => {
     }
 };
 
-// ✅ Decrease stock when order is placed
 const decreaseStock = async (req, res) => {
     try {
         const { id } = req.params;
@@ -95,20 +90,18 @@ const decreaseStock = async (req, res) => {
 
         res.json({ message: "Stock updated successfully", stock: book.stock });
     } catch (error) {
-        console.error("❌ Error decreasing stock:", error);
+        console.error(" Error decreasing stock:", error);
         res.status(500).json({ message: "Error decreasing stock", error });
     }
 };
 
 
-// ✅ Delete a book
 const mongoose = require("mongoose");
 
 const deleteBook = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // ✅ Validate ObjectId format before deleting
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ message: "Invalid book ID format" });
         }

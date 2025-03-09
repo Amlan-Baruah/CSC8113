@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import { loginUser, registerUser, getUserProfile, updateUserProfile } from "../api/api"; // ✅ Import updateUserProfile
+import { loginUser, registerUser, getUserProfile, updateUserProfile } from "../api/api";
 
 const AuthContext = createContext();
 
@@ -68,6 +68,5 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// ✅ Correct Named Export
 export { AuthContext };
 export default AuthProvider;

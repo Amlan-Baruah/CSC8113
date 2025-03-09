@@ -1,13 +1,13 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";  // ✅ Get AuthContext
+import { AuthContext } from "../context/AuthContext";
 
 const Register = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
-    const { register } = useContext(AuthContext);  // ✅ Get register function
+    const { register } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -15,8 +15,8 @@ const Register = () => {
         setError(null);
 
         try {
-            await register({ name, email, password }); // ✅ Use register function
-            navigate("/"); // ✅ Redirect to homepage after registering
+            await register({ name, email, password });
+            navigate("/");
         } catch (err) {
             setError("Registration failed. Try again.");
         }

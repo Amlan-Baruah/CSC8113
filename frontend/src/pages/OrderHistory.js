@@ -12,7 +12,7 @@ const OrderHistory = () => {
 
     useEffect(() => {
         if (!user) {
-            navigate("/login");  // ✅ Redirect if not logged in
+            navigate("/login");
             return;
         }
 
@@ -42,7 +42,7 @@ const OrderHistory = () => {
                             <h3>Order ID: {order._id}</h3>
                             <p><strong>Date:</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
                             <p><strong>Total Price:</strong> ${order.totalPrice.toFixed(2)}</p>
-                            <p><strong>Payment:</strong> {order.isPaid ? "✅ Paid" : "❌ Not Paid"}</p>
+                            <p><strong>Payment:</strong> {order.isPaid ? "Paid" : "Not Paid"}</p>
                             <div>
                                 <h4>📚 Ordered Books:</h4>
                                 {order.orderItems.map(item => (

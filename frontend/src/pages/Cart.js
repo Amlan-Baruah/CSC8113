@@ -19,7 +19,7 @@ const Cart = () => {
                                 <h3>{book.title}</h3>
                                 <p><strong>Author:</strong> {book.author}</p>
                                 <p><strong>Price:</strong> ${book.price}</p>
-                                <p><strong>Stock Available:</strong> {book.stock}</p> {/* ✅ Show stock available */}
+                                <p><strong>Stock Available:</strong> {book.stock}</p> {/*Show stock available */}
 
                                 {/* Quantity Controls */}
                                 <div style={styles.quantityControl}>
@@ -28,7 +28,7 @@ const Cart = () => {
                                     <button 
                                         onClick={() => book.quantity < book.stock && addToCart(book)}
                                         style={styles.button}
-                                        disabled={book.quantity >= book.stock} // ✅ Disable if stock limit reached
+                                        disabled={book.quantity >= book.stock}
                                     >
                                         ➕
                                     </button>
@@ -67,8 +67,7 @@ const styles = {
     quantity: { fontSize: "18px", fontWeight: "bold" },
     button: { padding: "5px 10px", fontSize: "16px", cursor: "pointer" },
     deleteButton: { marginTop: "10px", padding: "5px 10px", backgroundColor: "red", color: "white", border: "none", cursor: "pointer" },
-    
-    // ✅ New Checkout Button Styling
+
     checkoutContainer: { marginTop: "20px", textAlign: "center" },
     checkoutButton: { 
         padding: "10px 15px", 

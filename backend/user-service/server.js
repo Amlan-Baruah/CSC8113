@@ -2,8 +2,12 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const dns = require("dns");
 
 dotenv.config();
+
+// Force Node.js to prefer IPv4 when resolving DNS
+dns.setDefaultResultOrder("ipv4first");
 
 const app = express();
 app.use(express.json());
@@ -22,4 +26,4 @@ const userRoutes = require("./routes/userRoutes");
 app.use("/api/users", userRoutes);
 
 const PORT = process.env.PORT || 5002;
-app.listen(PORT, () => console.log(`👤 User Service running on port ${PORT}`));
+app.listen(PORT, "0.0.0.0", () => console.log(`👤 User Service running on port ${PORT}`));

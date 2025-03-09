@@ -8,10 +8,10 @@ import Login from "./pages/Login";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
-import OrderHistory from "./pages/OrderHistory"; // ✅ Import Order History Page
+import OrderHistory from "./pages/OrderHistory";
 import { AuthProvider } from "./context/AuthContext";  
 import { CartProvider } from "./context/CartContext";
-import Profile from "./pages/Profile";  // ✅ Import Profile page
+import Profile from "./pages/Profile";
 
 const App = () => {
   return (
@@ -27,8 +27,8 @@ const App = () => {
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/order-success" element={<OrderSuccess />} />
-            <Route path="/orders" element={<OrderHistory />} />  {/* ✅ New Route */}
-            <Route path="/profile" element={<Profile />} />  {/* ✅ New Profile Route */}
+            <Route path="/orders" element={<OrderHistory />} />  {/*New Route */}
+            <Route path="/profile" element={<Profile />} />  {/*New Profile Route */}
           </Routes>
         </Router>
       </AuthProvider>

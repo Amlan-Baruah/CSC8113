@@ -2,7 +2,6 @@ const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-// ✅ Register a new user
 const registerUser = async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -25,7 +24,6 @@ const registerUser = async (req, res) => {
     }
 };
 
-// ✅ Login user and get token
 const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -48,7 +46,6 @@ const loginUser = async (req, res) => {
     }
 };
 
-// ✅ Get user profile (Protected route)
 const getUserProfile = async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select("-password");
@@ -63,7 +60,6 @@ const getUserProfile = async (req, res) => {
     }
 };
 
-// ✅ Update User Profile (PUT /api/users/profile)
 const updateUserProfile = async (req, res) => {
     try {
         const user = await User.findById(req.user.id);

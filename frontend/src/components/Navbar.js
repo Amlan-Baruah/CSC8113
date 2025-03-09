@@ -19,7 +19,7 @@ const Navbar = () => {
                 {user ? (
                     <>
                         <span style={styles.user}>👤 {user.name}</span>
-                        <Link to="/profile" style={styles.profileButton}>⚙ Profile</Link> {/* ✅ New Profile Link */}
+                        <Link to="/profile" style={styles.profileButton}>⚙ Profile</Link> {/*New Profile Link */}
                         <Link to="/orders" style={styles.orderButton}>📜 Orders</Link>
                         <button style={styles.button} onClick={logout}>Logout</button>
                     </>
@@ -70,7 +70,7 @@ const styles = {
         fontWeight: "bold",
         marginRight: "10px",
     },
-    profileButton: {  // ✅ New Style for Profile Button
+    profileButton: {
         backgroundColor: "white",
         color: "#007BFF",
         padding: "8px 12px",
@@ -79,7 +79,7 @@ const styles = {
         fontSize: "16px",
         fontWeight: "bold",
     },
-    orderButton: {  // ✅ Style for Orders Button
+    orderButton: {
         backgroundColor: "white",
         color: "#007BFF",
         padding: "8px 12px",

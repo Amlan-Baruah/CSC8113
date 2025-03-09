@@ -1,19 +1,33 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import CartContext from "../context/CartContext";  // ✅ Import CartContext
+import CartContext from "../context/CartContext";
+
+const BASE_URL = "http://csc-8113-bookstore.duckdns.org/catalog/api/books";
 
 const BookDetail = () => {
     const { id } = useParams();
     const [book, setBook] = useState(null);
-    const { addToCart } = useContext(CartContext);  // ✅ Get addToCart function
+    const { addToCart } = useContext(CartContext);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        axios.get(`http://localhost:5001/api/books/${id}`)
-            .then(response => setBook(response.data))
-            .catch(error => console.error("Error fetching book details:", error));
+        const fetchBook = async () => {
+            try {
+                console.log(`Fetching book from: ${BASE_URL}/${id}`);
+                const response = await axios.get(`${BASE_URL}/${id}`);
+                console.log("Book data received:", response.data);
+                setBook(response.data);
+            } catch (error) {
+                console.error("Error fetching book details:", error);
+                setError("Failed to fetch book details. Check API connection.");
+            }
+        };
+
+        fetchBook();
     }, [id]);
 
+    if (error) return <p style={{ color: "red" }}>{error}</p>;
     if (!book) return <p>Loading book details...</p>;
 
     return (
@@ -28,13 +42,12 @@ const BookDetail = () => {
             <p><strong>Price:</strong> ${book.price}</p>
             <p><strong>Description:</strong> {book.description}</p>
             <p><strong>Category:</strong> {book.category}</p>
-            <p><strong>Stock:</strong> {book.stock > 0 ? `${book.stock} left` : "Out of stock ❌"}</p>  {/* ✅ Show stock quantity */}
-            
-            {/* Disable Add to Cart if stock is 0 */}
+            <p><strong>Stock:</strong> {book.stock > 0 ? `${book.stock} left` : "Out of stock"}</p>
+
             <button 
                 onClick={() => addToCart(book)} 
                 style={styles.addToCartButton} 
-                disabled={book.stock === 0}  // ✅ Disable if out of stock
+                disabled={book.stock === 0} 
             >
                 {book.stock > 0 ? "🛒 Add to Cart" : "Out of Stock"}
             </button>

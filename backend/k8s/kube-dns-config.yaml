@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2025-03-08T14:11:20Z"
+  labels:
+    addonmanager.kubernetes.io/mode: EnsureExists
+  name: kube-dns
+  namespace: kube-system
+  resourceVersion: "319"
+  uid: 3deb9da4-a84d-49dd-927e-1cf29d7dcdc5
+data:
+  stubDomains: |
+    {
+      "mongodb.net": ["8.8.8.8", "8.8.4.4"]
+    }
+  upstreamNameservers: |
+    ["8.8.8.8", "8.8.4.4"]
