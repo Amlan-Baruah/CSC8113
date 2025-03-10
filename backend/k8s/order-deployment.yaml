@@ -23,6 +23,22 @@ spec:
             secretKeyRef:
               name: mongodb-secret
               key: MONGO_URI
+      livenessProbe:
+          httpGet:
+            path: /health
+            port: 5003
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 5003
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 2
       dnsPolicy: ClusterFirst
 ---
 apiVersion: v1
