@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     && apt-get update && apt-get install -y mongodb-mongosh \
     && rm -rf /var/lib/apt/lists/*
 
-COPY ../package*.json ./
+COPY package*.json ./
 
 RUN npm install
 

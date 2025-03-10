@@ -14,20 +14,20 @@ spec:
         pathType: ImplementationSpecific
         backend:
           service:
-            name: catalog-service-blue
+            name: catalog-service
             port:
               number: 80
       - path: /order(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
           service:
-            name: order-service-blue
+            name: order-service
             port:
               number: 80
       - path: /user(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
           service:
-            name: user-service-blue
+            name: user-service
             port:
               number: 80
