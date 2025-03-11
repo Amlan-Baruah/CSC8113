@@ -23,5 +23,17 @@ mongoose.connect(process.env.MONGO_URI)
 const bookRoutes = require("./routes/bookRoutes");
 app.use("/api/books", bookRoutes);
 
+app.get("/health", (req, res) => {
+    res.status(200).send("OK");
+});
+
+app.get("/ready", (req, res) => {
+    if (mongoose.connection.readyState === 1) {
+        res.status(200).send("Ready");
+    } else {
+        res.status(503).send("Not Ready");
+    }
+});
+
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, "0.0.0.0", () => console.log(`🚀 Catalog Service running on port ${PORT}`));

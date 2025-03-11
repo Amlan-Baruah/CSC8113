@@ -23,5 +23,17 @@ mongoose
 const orderRoutes = require("./routes/orderRoutes");
 app.use("/api/orders", orderRoutes);
 
+app.get("/health", (req, res) => {
+    res.status(200).send("OK");
+});
+
+app.get("/ready", (req, res) => {
+    if (mongoose.connection.readyState === 1) {
+        res.status(200).send("Ready");
+    } else {
+        res.status(503).send("Not Ready");
+    }
+});
+
 const PORT = process.env.PORT || 5003;
 app.listen(PORT, "0.0.0.0", () => console.log(`🛒 Order Service running on port ${PORT}`));
