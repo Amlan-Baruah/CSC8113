@@ -25,7 +25,7 @@ spec:
             secretKeyRef:
               name: mongodb-secret
               key: MONGO_URI
-                resources:
+        resources:
           requests:
             cpu: "100m"
             memory: "128Mi"
