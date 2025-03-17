@@ -1,0 +1,174 @@
+pipeline {
+    agent any
+
+    environment {
+        GCP_PROJECT_ID = 'csc-8113'
+        GKE_CLUSTER = 'bookstore-cluster'
+        GKE_REGION = 'us-central1-a'
+        GCP_SA_KEY = credentials('gcp-service-account')
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'master', credentialsId: 'github-credentials', url: 'https://github.com/Amlan-Baruah/CSC8113.git'
+            }
+        }
+
+        stage('Authenticate with GCP') {
+            steps {
+                sh '''
+                gcloud auth activate-service-account --key-file=$GCP_SA_KEY
+                gcloud config set project $GCP_PROJECT_ID
+                gcloud auth configure-docker us-central1-docker.pkg.dev
+                '''
+            }
+        }
+
+        stage('Build and Push Docker Images') {
+            parallel {
+                stage('Frontend') {
+                    steps {
+                        sh '''
+                        docker build -t us-central1-docker.pkg.dev/$GCP_PROJECT_ID/bookstore-repo/frontend:v${BUILD_NUMBER} ./frontend
+                        docker push us-central1-docker.pkg.dev/$GCP_PROJECT_ID/bookstore-repo/frontend:v${BUILD_NUMBER}
+                        '''
+                    }
+                }
+                stage('Catalog Service') {
+                    steps {
+                        sh '''
+                        docker build -t us-central1-docker.pkg.dev/$GCP_PROJECT_ID/bookstore-repo/catalog-service:v${BUILD_NUMBER} -f backend/catalog-service/Dockerfile backend/
+                        docker push us-central1-docker.pkg.dev/$GCP_PROJECT_ID/bookstore-repo/catalog-service:v${BUILD_NUMBER}
+                        '''
+                    }
+                }
+                stage('Order Service') {
+                    steps {
+                        sh '''
+                        docker build -t us-central1-docker.pkg.dev/$GCP_PROJECT_ID/bookstore-repo/order-service:v$BUILD_NUMBER -f backend/order-service/Dockerfile backend/
+                        docker push us-central1-docker.pkg.dev/$GCP_PROJECT_ID/bookstore-repo/order-service:v${BUILD_NUMBER}
+                        '''
+                    }
+                }
+                stage('User Service') {
+                    steps {
+                        sh '''
+                        docker build -t us-central1-docker.pkg.dev/$GCP_PROJECT_ID/bookstore-repo/user-service:v$BUILD_NUMBER -f backend/user-service/Dockerfile backend/
+                        docker push us-central1-docker.pkg.dev/$GCP_PROJECT_ID/bookstore-repo/user-service:v${BUILD_NUMBER}
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Determine Active Environment') {
+            steps {
+                script {
+                    def activeEnv = sh(script: "kubectl get ingress bookstore-ingress -o jsonpath='{.spec.rules[0].http.paths[0].backend.service.name}'", returnStdout: true).trim()
+                    if (activeEnv.contains("blue")) {
+                        env.INACTIVE_ENV = "green"
+                    } else {
+                        env.INACTIVE_ENV = "blue"
+                    }
+                    echo "Inactive environment: ${env.INACTIVE_ENV}"
+                }
+            }
+        }
+
+        stage('Deploy to Inactive Environment') {
+            steps {
+                sh '''
+                sed -i "s|us-central1-docker.pkg.dev/$GCP_PROJECT_ID/bookstore-repo/catalog-service:.*|us-central1-docker.pkg.dev/$GCP_PROJECT_ID/bookstore-repo/catalog-service:v${BUILD_NUMBER}|g" backend/k8s/catalog-service-${INACTIVE_ENV}.yaml
+                sed -i "s|us-central1-docker.pkg.dev/$GCP_PROJECT_ID/bookstore-repo/order-service:.*|us-central1-docker.pkg.dev/$GCP_PROJECT_ID/bookstore-repo/order-service:v${BUILD_NUMBER}|g" backend/k8s/order-service-${INACTIVE_ENV}.yaml
+                sed -i "s|us-central1-docker.pkg.dev/$GCP_PROJECT_ID/bookstore-repo/user-service:.*|us-central1-docker.pkg.dev/$GCP_PROJECT_ID/bookstore-repo/user-service:v${BUILD_NUMBER}|g" backend/k8s/user-service-${INACTIVE_ENV}.yaml
+                sed -i "s|us-central1-docker.pkg.dev/$GCP_PROJECT_ID/bookstore-repo/frontend:.*|us-central1-docker.pkg.dev/$GCP_PROJECT_ID/bookstore-repo/frontend:v${BUILD_NUMBER}|g" frontend/k8s/frontend-${INACTIVE_ENV}.yaml
+
+                kubectl apply -f backend/k8s/catalog-service-${INACTIVE_ENV}.yaml
+                kubectl apply -f backend/k8s/order-service-${INACTIVE_ENV}.yaml
+                kubectl apply -f backend/k8s/user-service-${INACTIVE_ENV}.yaml
+                kubectl apply -f frontend/k8s/frontend-${INACTIVE_ENV}.yaml
+                '''
+            }
+        }
+
+        stage('Health Check') {
+            steps {
+                script {
+                    echo "Waiting for pods to be ready..."
+                    sh '''
+                    timeout=60  # Maximum wait time in seconds
+                    interval=5  # Check interval in seconds
+                    elapsed=0
+        
+                    while [ $elapsed -lt $timeout ]; do
+                        running_pods=$(kubectl get pods | grep ${INACTIVE_ENV} | grep Running | wc -l)
+                        
+                        if [ "$running_pods" -gt 0 ]; then
+                            echo "Health check passed! All pods are running."
+                            exit 0
+                        fi
+                        
+                        echo "Waiting for pods to become ready... (${elapsed}s elapsed)"
+                        sleep $interval
+                        elapsed=$((elapsed + interval))
+                    done
+        
+                    echo "Health check failed! Rolling back..."
+                    kubectl get deployments
+                    kubectl delete deployment catalog-service-${INACTIVE_ENV} --ignore-not-found=true
+                    kubectl delete deployment order-service-${INACTIVE_ENV} --ignore-not-found=true
+                    kubectl delete deployment user-service-${INACTIVE_ENV} --ignore-not-found=true
+                    kubectl delete deployment frontend-${INACTIVE_ENV} --ignore-not-found=true
+        
+                    exit 1  # Fail pipeline if pods are not running after timeout
+                    '''
+                }
+            }
+        }
+
+
+
+        stage('Update HPA for Inactive Environment') {
+            steps {
+                sh '''
+                sed -i "s/catalog-service-blue/catalog-service-${INACTIVE_ENV}/g" backend/k8s/hpa.yaml
+                sed -i "s/order-service-blue/order-service-${INACTIVE_ENV}/g" backend/k8s/hpa.yaml
+                sed -i "s/user-service-blue/user-service-${INACTIVE_ENV}/g" backend/k8s/hpa.yaml
+                sed -i "s/frontend-blue/frontend-${INACTIVE_ENV}/g" backend/k8s/hpa.yaml
+                
+                kubectl apply -f backend/k8s/hpa.yaml
+                '''
+            }
+        }
+
+        stage('Switch Traffic to New Version') {
+            steps {
+                sh '''
+                if [ ! -f backend/k8s/ingress.yaml ]; then
+                echo "Error: ingress.yaml file not found!"
+                exit 1
+                fi
+
+                sed -i "s/catalog-service-.*/catalog-service-${INACTIVE_ENV}/g" backend/k8s/ingress.yaml
+                sed -i "s/order-service-.*/order-service-${INACTIVE_ENV}/g" backend/k8s/ingress.yaml
+                sed -i "s/user-service-.*/user-service-${INACTIVE_ENV}/g" backend/k8s/ingress.yaml
+                sed -i "s/frontend-.*/frontend-${INACTIVE_ENV}/g" backend/k8s/ingress.yaml
+                kubectl apply -f backend/k8s/ingress.yaml
+                '''
+            }
+        }
+
+        stage('Cleanup Old Deployment') {
+            steps {
+                script {
+                    def activeEnv = (env.INACTIVE_ENV == "blue") ? "green" : "blue"
+                    sh "kubectl delete deployment catalog-service-${activeEnv} || true"
+                    sh "kubectl delete deployment order-service-${activeEnv} || true"
+                    sh "kubectl delete deployment user-service-${activeEnv} || true"
+                    sh "kubectl delete deployment frontend-${activeEnv} || true"
+                }
+            }
+        }
+    }
+}
