@@ -22,37 +22,22 @@ const Login = () => {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <div className="bg-white shadow-lg rounded-lg p-8 max-w-sm w-full">
-                <h2 className="text-2xl font-semibold text-center mb-6">Login</h2>
-                {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
-                <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
-                    <input 
-                        type="email" 
-                        placeholder="Email" 
-                        value={email} 
-                        onChange={(e) => setEmail(e.target.value)} 
-                        required 
-                        className="px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                    />
-                    <input 
-                        type="password" 
-                        placeholder="Password" 
-                        value={password} 
-                        onChange={(e) => setPassword(e.target.value)} 
-                        required 
-                        className="px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                    />
-                    <button 
-                        type="submit" 
-                        className="bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-all"
-                    >
-                        Login
-                    </button>
-                </form>
-            </div>
+        <div style={styles.container}>
+            <h2>Login</h2>
+            {error && <p style={styles.error}>{error}</p>}
+            <form onSubmit={handleSubmit} style={styles.form}>
+                <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                <button type="submit">Login</button>
+            </form>
         </div>
     );
+};
+
+const styles = {
+    container: { textAlign: "center", padding: "50px" },
+    form: { display: "flex", flexDirection: "column", width: "300px", margin: "auto", gap: "10px" },
+    error: { color: "red", fontWeight: "bold" }
 };
 
 export default Login;

@@ -3,7 +3,7 @@ kind: TestRun
 metadata:
   name: k6-load-test
 spec:
-  parallelism: 1
+  parallelism: 2
   script:
     configMap:
       name: k6-script
@@ -26,13 +26,13 @@ data:
 
     export let options = {
         stages: [
-            { duration: '5s', target: 100 },  // 10s - ramp up to 100 users
-            { duration: '5s', target: 200 },  // 10s - ramp up to 200 users
-            { duration: '5s', target: 300 },  // 10s - ramp up to 300 users
-            { duration: '5s', target: 400 },  // 10s - ramp up to 400 users
-            { duration: '5s', target: 500 },  // 10s - ramp up to 500 users
-            { duration: '4m', target: 500 },  // 4m - hold at 500 users
-            { duration: '25s', target: 0 },    // 30s - ramp down to 0 users
+            { duration: '5s', target: 100 },  // 5s - ramp up to 100 users
+            { duration: '5s', target: 200 },  // 5s - ramp up to 200 users
+            { duration: '5s', target: 300 },  // 5s - ramp up to 300 users
+            { duration: '5s', target: 400 },  // 5s - ramp up to 400 users
+            { duration: '5s', target: 500 },  // 5s - ramp up to 500 users
+            { duration: '5m', target: 500 },  // 5m - hold at 500 users
+            { duration: '25s', target: 0 },    // 25s - ramp down to 0 users
         ],
         thresholds: {
             // http_req_duration: ['p(95)<500'],
@@ -40,7 +40,7 @@ data:
     };
 
     export default function () {
-        let res = http.get('http://catalog-service-blue.default.svc/api/books');
+        let res = http.get('http://catalog-service-green.default.svc/api/books');
 
         check(res, {
             'status is 200': (r) => r.status === 200,
