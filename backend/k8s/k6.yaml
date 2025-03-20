@@ -40,7 +40,7 @@ data:
     };
 
     export default function () {
-        let res = http.get('http://catalog-service-green.default.svc/api/books');
+        let res = http.get('http://catalog-service-blue.default.svc/api/books');
 
         check(res, {
             'status is 200': (r) => r.status === 200,
