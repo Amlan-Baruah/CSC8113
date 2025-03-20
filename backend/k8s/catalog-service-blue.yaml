@@ -27,7 +27,7 @@ spec:
               key: MONGO_URI
         resources:
           limits:
-            cpu: "60m"
+            cpu: "100m"
             memory: "256Mi"
         livenessProbe:
           httpGet:
