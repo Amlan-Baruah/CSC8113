@@ -31,7 +31,7 @@ data:
             { duration: '10s', target: 300 },  // 10s - ramp up to 300 users
             { duration: '10s', target: 400 },  // 10s - ramp up to 400 users
             { duration: '10s', target: 500 },  // 10s - ramp up to 500 users
-            { duration: '100m', target: 500 },  // 10m - hold at 500 users
+            { duration: '10m', target: 500 },  // 10m - hold at 500 users
             { duration: '50s', target: 0 },    // 50s - ramp down to 0 users
         ],
         thresholds: {
